@@ -1,17 +1,16 @@
+import { GameType, ScratchCardData } from "../types";
 
-import { GameType, ScratchCardData } from '../types';
-
-const PRIZE_POOL = [0, 0, 0, 100, 100, 200, 200, 500, 1000, 5000, 100000];
+const PRIZE_POOL = [0, 0, 0, 100, 100, 200, 200, 500, 1000, 5000, 10000];
 
 export const generateCard = (type: GameType): ScratchCardData => {
   const id = Math.random().toString(36).substr(2, 9);
   const winningNumbersCount = type === GameType.NEW_YEAR_FUKU ? 3 : 2;
   const yourNumbersCount = 10;
-  
+
   // Decide if this card is a winner based on typical Taiwanese odds (approx 30%)
   const winProbability = 0.33;
   const willWin = Math.random() < winProbability;
-  
+
   const winningNumbers: number[] = [];
   while (winningNumbers.length < winningNumbersCount) {
     const num = Math.floor(Math.random() * 50) + 1;
@@ -26,10 +25,12 @@ export const generateCard = (type: GameType): ScratchCardData => {
     let isWinner = false;
     let prize = 0;
 
-    if (willWin && i === 0) { // Force at least one win if decided
+    if (willWin && i === 0) {
+      // Force at least one win if decided
       num = winningNumbers[0];
       isWinner = true;
-      prize = PRIZE_POOL[Math.floor(Math.random() * (PRIZE_POOL.length - 3)) + 3];
+      prize =
+        PRIZE_POOL[Math.floor(Math.random() * (PRIZE_POOL.length - 3)) + 3];
     } else {
       num = Math.floor(Math.random() * 50) + 1;
       // Ensure it doesn't accidentally win if not meant to
@@ -38,10 +39,11 @@ export const generateCard = (type: GameType): ScratchCardData => {
       }
       isWinner = winningNumbers.includes(num);
       if (isWinner) {
-        prize = PRIZE_POOL[Math.floor(Math.random() * (PRIZE_POOL.length - 3)) + 3];
+        prize =
+          PRIZE_POOL[Math.floor(Math.random() * (PRIZE_POOL.length - 3)) + 3];
       }
     }
-    
+
     if (isWinner) totalPrize += prize;
     yourNumbers.push({ number: num, prize, isWinner });
   }
@@ -58,23 +60,29 @@ export const generateCard = (type: GameType): ScratchCardData => {
     yourNumbers,
     totalPrize,
     isRevealed: false,
-    isWinner: totalPrize > 0
+    isWinner: totalPrize > 0,
   };
 };
 
 const getTitle = (type: GameType) => {
   switch (type) {
-    case GameType.LUCKY_777: return '幸運 777';
-    case GameType.GOLD_RUSH: return '黃金大寶藏';
-    case GameType.NEW_YEAR_FUKU: return '金兔報喜';
+    case GameType.LUCKY_777:
+      return "幸運 777";
+    case GameType.GOLD_RUSH:
+      return "黃金大寶藏";
+    case GameType.NEW_YEAR_FUKU:
+      return "金兔報喜";
   }
 };
 
 const getPrice = (type: GameType) => {
   switch (type) {
-    case GameType.LUCKY_777: return 100;
-    case GameType.GOLD_RUSH: return 200;
-    case GameType.NEW_YEAR_FUKU: return 500;
+    case GameType.LUCKY_777:
+      return 100;
+    case GameType.GOLD_RUSH:
+      return 200;
+    case GameType.NEW_YEAR_FUKU:
+      return 500;
   }
 };
 
@@ -83,6 +91,7 @@ export const getProbabilityInfo = (type: GameType) => {
     winRate: "33.15%",
     returnRate: "62.5%",
     topPrize: type === GameType.NEW_YEAR_FUKU ? "500萬" : "100萬",
-    description: "刮刮樂的設計期望值通常為負數，這意味著長期玩下來，平均每刮一張都會虧損約 30-40% 的成本。這是一種機率遊戲，僅供娛樂。"
+    description:
+      "刮刮樂的設計期望值通常為負數，這意味著長期玩下來，平均每刮一張都會虧損約 30-40% 的成本。這是一種機率遊戲，僅供娛樂。",
   };
 };
