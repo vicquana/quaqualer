@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScratchCardData } from '../types';
 import ScratchCanvas from './ScratchCanvas';
 import { playRevealSound } from '../utils/audio';
@@ -11,12 +11,33 @@ interface CardContainerProps {
 
 const CardContainer: React.FC<CardContainerProps> = ({ card, onReveal }) => {
   const [revealed, setRevealed] = useState(false);
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const scratchAreaRef = useRef<HTMLDivElement>(null);
 
   const handleComplete = () => {
     setRevealed(true);
     playRevealSound();
     onReveal();
   };
+
+  useEffect(() => {
+    const element = scratchAreaRef.current;
+    if (!element) return;
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      setCanvasSize({
+        width: Math.floor(rect.width),
+        height: Math.floor(rect.height)
+      });
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(() => updateSize());
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="relative w-full max-w-sm mx-auto aspect-[3/4] bg-yellow-500 rounded-xl shadow-2xl overflow-hidden border-8 border-yellow-600 p-4 select-none">
@@ -46,7 +67,10 @@ const CardContainer: React.FC<CardContainerProps> = ({ card, onReveal }) => {
         </div>
 
         {/* Your Numbers Area */}
-        <div className="bg-white/80 rounded-lg p-3 grid grid-cols-2 gap-2 flex-grow relative min-h-[300px]">
+        <div
+          ref={scratchAreaRef}
+          className="bg-white/80 rounded-lg p-3 grid grid-cols-2 gap-2 flex-grow relative min-h-[240px] sm:min-h-[300px]"
+        >
           {card.yourNumbers.map((item, i) => (
             <div key={i} className={`flex flex-col items-center justify-center p-1 rounded border ${item.isWinner && revealed ? 'bg-yellow-200 border-yellow-500 scale-105 transition-transform' : 'border-gray-200'}`}>
               <span className={`text-2xl font-black ${item.isWinner && revealed ? 'text-red-600' : 'text-gray-800'}`}>
@@ -64,12 +88,14 @@ const CardContainer: React.FC<CardContainerProps> = ({ card, onReveal }) => {
           ))}
 
           {/* Overlay Canvas */}
-          <ScratchCanvas 
-            width={340} 
-            height={320} 
-            onComplete={handleComplete} 
-            color="#d1d5db" 
-          />
+          {canvasSize.width > 0 && canvasSize.height > 0 && (
+            <ScratchCanvas 
+              width={canvasSize.width} 
+              height={canvasSize.height} 
+              onComplete={handleComplete} 
+              color="#d1d5db" 
+            />
+          )}
         </div>
       </div>
       

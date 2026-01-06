@@ -27,9 +27,14 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    if (width <= 0 || height <= 0) return;
 
-    canvas.width = width;
-    canvas.height = height;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, width, height);
@@ -43,6 +48,8 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     ctx.font = 'bold 20px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('刮開此處', width / 2, height / 2);
+
+    setIsFinished(false);
   }, [width, height, color]);
 
   const getPercentage = useCallback(() => {
@@ -51,7 +58,7 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return 0;
 
-    const imageData = ctx.getImageData(0, 0, width, height);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
     let count = 0;
 
@@ -60,7 +67,7 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     }
 
     return (count / (pixels.length / 4)) * 100;
-  }, [width, height]);
+  }, []);
 
   const scratch = (x: number, y: number) => {
     if (isFinished) return;
@@ -88,7 +95,7 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
       canvas.style.transition = 'opacity 0.5s ease-out';
       canvas.style.opacity = '0';
       setTimeout(() => {
-        ctx.clearRect(0, 0, width, height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }, 500);
     }
   };
