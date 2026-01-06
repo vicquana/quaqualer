@@ -11,10 +11,10 @@ const initAudio = () => {
   return audioCtx;
 };
 
-// Scratch Sound: Low-pass filtered noise
+// Scratch Sound: Sandpaper-on-wood style textured noise
 export const playScratchSound = () => {
   const ctx = initAudio();
-  const bufferSize = ctx.sampleRate * 0.1; // 100ms burst
+  const bufferSize = ctx.sampleRate * 0.14; // 140ms textured burst
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
 
@@ -25,17 +25,29 @@ export const playScratchSound = () => {
   const noise = ctx.createBufferSource();
   noise.buffer = buffer;
 
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(800, ctx.currentTime);
-  filter.Q.setValueAtTime(1, ctx.currentTime);
+  const highPass = ctx.createBiquadFilter();
+  highPass.type = 'highpass';
+  highPass.frequency.setValueAtTime(120, ctx.currentTime);
+  highPass.Q.setValueAtTime(0.5, ctx.currentTime);
+
+  const bandPass = ctx.createBiquadFilter();
+  bandPass.type = 'bandpass';
+  bandPass.frequency.setValueAtTime(650, ctx.currentTime);
+  bandPass.Q.setValueAtTime(0.8, ctx.currentTime);
+
+  const lowPass = ctx.createBiquadFilter();
+  lowPass.type = 'lowpass';
+  lowPass.frequency.setValueAtTime(1800, ctx.currentTime);
+  lowPass.Q.setValueAtTime(0.7, ctx.currentTime);
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.05, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.07, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
 
-  noise.connect(filter);
-  filter.connect(gain);
+  noise.connect(highPass);
+  highPass.connect(bandPass);
+  bandPass.connect(lowPass);
+  lowPass.connect(gain);
   gain.connect(ctx.destination);
 
   noise.start();
