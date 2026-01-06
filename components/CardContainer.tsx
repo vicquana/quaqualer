@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { ScratchCardData } from '../types';
 import ScratchCanvas from './ScratchCanvas';
+import { playRevealSound } from '../utils/audio';
 
 interface CardContainerProps {
   card: ScratchCardData;
@@ -13,6 +14,7 @@ const CardContainer: React.FC<CardContainerProps> = ({ card, onReveal }) => {
 
   const handleComplete = () => {
     setRevealed(true);
+    playRevealSound();
     onReveal();
   };
 

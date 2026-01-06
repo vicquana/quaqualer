@@ -1,5 +1,6 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { playScratchSound } from '../utils/audio';
 
 interface ScratchCanvasProps {
   width: number;
@@ -18,8 +19,8 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [scratchedPercentage, setScratchedPercentage] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const lastSoundTime = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,21 +28,17 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas dimensions
     canvas.width = width;
     canvas.height = height;
 
-    // Fill with silver color
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, width, height);
 
-    // Add some noise texture to make it look like a real scratch card
     ctx.fillStyle = 'rgba(0,0,0,0.1)';
     for (let i = 0; i < 500; i++) {
       ctx.fillRect(Math.random() * width, Math.random() * height, 2, 2);
     }
     
-    // Add "Scratch Here" text
     ctx.fillStyle = '#666';
     ctx.font = 'bold 20px Arial';
     ctx.textAlign = 'center';
@@ -77,13 +74,17 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     ctx.arc(x, y, brushSize, 0, Math.PI * 2);
     ctx.fill();
 
+    // Throttled sound effect for scratching
+    const now = Date.now();
+    if (now - lastSoundTime.current > 60) {
+      playScratchSound();
+      lastSoundTime.current = now;
+    }
+
     const percent = getPercentage();
-    setScratchedPercentage(percent);
-    
     if (percent > 65) {
       setIsFinished(true);
       onComplete();
-      // Fade out the remaining scratch surface
       canvas.style.transition = 'opacity 0.5s ease-out';
       canvas.style.opacity = '0';
       setTimeout(() => {
