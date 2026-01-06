@@ -1,6 +1,5 @@
-
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { playScratchSound } from '../utils/audio';
+import React, { useRef, useEffect, useState, useCallback } from "react";
+import { playScratchSound } from "../utils/audio";
 
 interface ScratchCanvasProps {
   width: number;
@@ -10,12 +9,12 @@ interface ScratchCanvasProps {
   brushSize?: number;
 }
 
-const ScratchCanvas: React.FC<ScratchCanvasProps> = ({ 
-  width, 
-  height, 
-  onComplete, 
-  color = '#C0C0C0', 
-  brushSize = 35 
+const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
+  width,
+  height,
+  onComplete,
+  color = "#C0C0C0",
+  brushSize = 15,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -25,7 +24,7 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
     if (width <= 0 || height <= 0) return;
 
@@ -39,15 +38,15 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
     for (let i = 0; i < 500; i++) {
       ctx.fillRect(Math.random() * width, Math.random() * height, 2, 2);
     }
-    
-    ctx.fillStyle = '#666';
-    ctx.font = 'bold 20px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('刮開此處', width / 2, height / 2);
+
+    ctx.fillStyle = "#666";
+    ctx.font = "bold 20px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("刮開此處", width / 2, height / 2);
 
     setIsFinished(false);
   }, [width, height, color]);
@@ -55,7 +54,7 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
   const getPercentage = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return 0;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return 0;
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -73,10 +72,10 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     if (isFinished) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
     ctx.arc(x, y, brushSize, 0, Math.PI * 2);
     ctx.fill();
@@ -92,8 +91,8 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     if (percent > 65) {
       setIsFinished(true);
       onComplete();
-      canvas.style.transition = 'opacity 0.5s ease-out';
-      canvas.style.opacity = '0';
+      canvas.style.transition = "opacity 0.5s ease-out";
+      canvas.style.opacity = "0";
       setTimeout(() => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       }, 500);
@@ -118,7 +117,10 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     setIsDrawing(true);
     const rect = canvasRef.current?.getBoundingClientRect();
     if (rect && e.touches[0]) {
-      scratch(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+      scratch(
+        e.touches[0].clientX - rect.left,
+        e.touches[0].clientY - rect.top
+      );
     }
   };
 
@@ -126,7 +128,10 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
     if (!isDrawing) return;
     const rect = canvasRef.current?.getBoundingClientRect();
     if (rect && e.touches[0]) {
-      scratch(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+      scratch(
+        e.touches[0].clientX - rect.left,
+        e.touches[0].clientY - rect.top
+      );
     }
   };
 
@@ -141,7 +146,7 @@ const ScratchCanvas: React.FC<ScratchCanvasProps> = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
       className="absolute top-0 left-0 z-10 cursor-crosshair rounded-lg"
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: "none" }}
     />
   );
 };
