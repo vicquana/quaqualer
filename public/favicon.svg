@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d3d3d3;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f5f5f5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a9a9a9;stop-opacity:1" />
+    </linearGradient>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/>
+    </filter>
+  </defs>
+  <rect width="100" height="100" rx="20" fill="url(#silver)" />
+  <!-- Add subtle noise for scratch texture effect -->
+  <rect width="100" height="100" rx="20" fill="transparent" filter="url(#noise)" opacity="0.3"/>
+  
+  <text x="50" y="50" font-family="'Noto Sans TC', sans-serif" font-weight="900" font-size="70" fill="#FFD700" stroke="#B8860B" stroke-width="2" text-anchor="middle" dominant-baseline="central" dy="5">刮</text>
+</svg>
