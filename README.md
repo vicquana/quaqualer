@@ -25,15 +25,15 @@
 **先決條件：** Node.js
 
 1. 安裝相依套件：
-   `npm install`
+   `pnpm install`
 2. 啟動開發伺服器：
-   `npm run dev`
+   `pnpm run dev`
 3. 於瀏覽器開啟 Vite 顯示的本機網址。
 
 ## 產出與預覽
 
-- 建置：`npm run build`
-- 本機預覽：`npm run preview`
+- 建置：`pnpm run build`
+- 本機預覽：`pnpm run preview`
 
 ## 注意事項
 
